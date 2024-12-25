@@ -6,11 +6,11 @@ const {
 } = require("../../models/launches.model");
 const { isPreviousDate } = require("../../utils/functions");
 
-function httpGetAllLaunches(req, res) {
-  return res.status(200).json(getAllLaunches());
+async function httpGetAllLaunches(req, res) {
+  return res.status(200).json(await getAllLaunches());
 }
 
-function httpAddNewLaunch(req, res) {
+async function httpAddNewLaunch(req, res) {
   launch = req.body;
 
   if (
@@ -37,20 +37,38 @@ function httpAddNewLaunch(req, res) {
     });
   }
 
-  addNewLaunch(launch);
-  return res.status(201).json(launch);
+  try {
+    await addNewLaunch(launch);
+    return res.status(201).json({
+      message: "Successfully added launch",
+      obj: launch,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error: error.message,
+    });
+  }
 }
 
-function httpAbortLaunch(req, res) {
+async function httpAbortLaunch(req, res) {
   const id = +req.params.id;
 
-  if (!isExistLaunchById(id)) {
+  const existLaunch = await isExistLaunchById(id);
+
+  if (!existLaunch) {
     return res.status(404).json({
       error: "Launch not found",
     });
   }
 
-  abortLaunchById(id);
+  const aborted = await abortLaunchById(id);
+
+  if (!aborted) {
+    return res.status(400).json({
+      error: "Failed to abort launch",
+    });
+  }
+
   return res.status(200).json({
     message: "Successfully aborted launch",
   });

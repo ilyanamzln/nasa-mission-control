@@ -8,7 +8,7 @@ const launchesRouter = require("./routes/launches/launches.router");
 
 const app = express();
 
-const whitelist = ["http://localhost:3000"];
+const whitelist = ["http://localhost:3000", "http://localhost:8000"];
 
 // add a !origin check to unblock REST tools or server-to-server requests
 const corsOptions = {
@@ -23,8 +23,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(morgan("common"));
-app.use(express.json());
 
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.use("/planets", planetsRouter);
