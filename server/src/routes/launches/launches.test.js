@@ -3,6 +3,8 @@ const request = require("supertest");
 const app = require("../../app");
 const { mongoConnect, mongoDisconnect } = require("../../services/mongo");
 
+const API_URL = "/v1/launches";
+
 describe("Launches API", () => {
   beforeAll(async () => {
     await mongoConnect();
@@ -15,7 +17,7 @@ describe("Launches API", () => {
   describe("Test GET /launches", () => {
     test("It should respond with 200 success", async () => {
       const response = await request(app)
-        .get("/launches")
+        .get(API_URL)
         .expect("Content-Type", /json/)
         .expect(200);
     });
@@ -58,7 +60,7 @@ describe("Launches API", () => {
 
     test("It should respond with 201 created", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post(API_URL)
         .send(launchCompleteInput)
         .expect("Content-Type", /json/)
         .expect(201);
@@ -75,7 +77,7 @@ describe("Launches API", () => {
 
     test("It should catch no matching planet found", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post(API_URL)
         .send(launchInexistPlanetInput)
         .expect("Content-Type", /json/)
         .expect(400);
@@ -87,7 +89,7 @@ describe("Launches API", () => {
 
     test("It should catch missing required property", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post(API_URL)
         .send(launchWithoutDateInput)
         .expect("Content-Type", /json/)
         .expect(400);
@@ -99,7 +101,7 @@ describe("Launches API", () => {
 
     test("It should catch invalid date", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post(API_URL)
         .send(launchWithIncorrectDate)
         .expect("Content-Type", /json/)
         .expect(400);
@@ -111,7 +113,7 @@ describe("Launches API", () => {
 
     test("It should catch past date", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post(API_URL)
         .send(launchWithPastDate)
         .expect("Content-Type", /json/)
         .expect(400);
